@@ -1,17 +1,18 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const express = require("express");
+const puppeteer = require("puppeteer"); // Added to auto-locate the locally installed browser
 
 // 1. Create a basic web server for Render
 const app = express();
 const PORT = process.env.PORT || 10000; // Render will provide this port
 let lastQr = null;
 
-// 2. Set up the WhatsApp client with required arguments for web servers
+// 2. Set up the WhatsApp client using the auto-located local browser path
 const client = new Client({ 
     authStrategy: new LocalAuth(),
     puppeteer: { 
-        // The Docker image will manage the exact path automatically
+        executablePath: puppeteer.executablePath(), // Finds the local browser downloaded by the postinstall script
         args: ['--no-sandbox', '--disable-setuid-sandbox'] 
     } 
 });
