@@ -1,19 +1,27 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const express = require("express");
-const puppeteer = require("puppeteer"); // Import puppeteer to locate the browser executable
 
 // 1. Create a basic web server for Render
 const app = express();
 const PORT = process.env.PORT || 10000; // Render will provide this port
 let lastQr = null;
 
-// 2. Set up the WhatsApp client with required arguments for web servers
+// 2. Set up the WhatsApp client pointing directly to Render's system Chrome executable
 const client = new Client({ 
     authStrategy: new LocalAuth(),
     puppeteer: { 
-        executablePath: puppeteer.executablePath(), // Automatically finds the correct Chrome path
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+        executablePath: '/usr/bin/google-chrome-stable', // Correct path for Render's environment
+        args: [
+            '--no-sandbox', 
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
+        ] 
     } 
 });
 
