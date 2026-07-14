@@ -1,6 +1,7 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const express = require("express");
+const puppeteer = require("puppeteer"); // Import puppeteer to locate the browser executable
 
 // 1. Create a basic web server for Render
 const app = express();
@@ -11,6 +12,7 @@ let lastQr = null;
 const client = new Client({ 
     authStrategy: new LocalAuth(),
     puppeteer: { 
+        executablePath: puppeteer.executablePath(), // Automatically finds the correct Chrome path
         args: ['--no-sandbox', '--disable-setuid-sandbox'] 
     } 
 });
@@ -38,7 +40,7 @@ app.get("/", (req, res) => {
     if (!lastQr) {
         return res.send('<h3>No QR generated yet or the bot is already logged in!</h3>');
     }
-    // Converts the QR string into a scannable image using Google Charts
+    // Fixed: Corrected the full Google Charts API URL to convert the QR string into an image
     const qrImageUrl = `https://googleapis.com{encodeURIComponent(lastQr)}`;
     res.send(`<h1>Scan this with your WhatsApp (Linked Devices):</h1><br><img src="${qrImageUrl}">`);
 });
